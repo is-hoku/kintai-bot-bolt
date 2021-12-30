@@ -1,0 +1,22 @@
+version: "3"
+
+services:
+    client:
+        depends_on:
+            - db
+        build:
+            dockerfile: ./Dockerfile
+        ports:
+            - "80:80"
+        tty: true
+        volumes:
+            - .:/usr/src/app
+        container_name: client
+
+    token-db:
+        image: mongo:latest
+        ports:
+            - 27018:27018
+        volumes:
+            - ./db:/data/db
+        container_name: token-db
