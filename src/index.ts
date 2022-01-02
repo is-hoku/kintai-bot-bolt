@@ -1,5 +1,6 @@
 import { App } from "@slack/bolt";
 import dotenv from "dotenv";
+import { AxiosClient } from "./axios";
 
 dotenv.config();
 
@@ -22,7 +23,9 @@ app.command("/clock_in", async ({ command, ack, respond, client }) => {
 		}
 		const text = command.text || "稼働します！";
 		const icon_url = user.profile!.image_original;
-		console.log(icon_url);
+
+		const freeeID = await AxiosClient.get(`/user/${user.profile.email}`);
+		console.log(freeeID);
 		await client.chat.postMessage({
 			channel: command.channel_id,
 			text: text,

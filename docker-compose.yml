@@ -12,6 +12,10 @@ services:
         volumes:
             - .:/usr/src/app
         container_name: client
+        external_links:
+            - app
+        networks:
+            - user
 
     token-db:
         image: mongo:latest
@@ -20,3 +24,7 @@ services:
         volumes:
             - ./db:/data/db
         container_name: token-db
+
+networks:
+    user:
+        external: true
