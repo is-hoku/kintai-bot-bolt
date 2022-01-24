@@ -11,6 +11,13 @@ const app = new App({
 
 const PORT = process.env.PORT || "3000";
 
+type freeeParam = {
+	company_id: number;
+	type: string;
+	base_date: string;
+	datetime: Date;
+};
+
 app.command("/auth", async ({ command, ack, respond, client }) => {
 	try {
 		await ack();
@@ -36,9 +43,13 @@ app.command("/clock_in", async ({ command, ack, respond, client }) => {
 		// AccessToken のチェック
 		const companyID = process.env.COMPANY_ID || "0000000";
 		const token = await AxiosClient.get(`/token/${companyID}`);
-		if (token.data.AccessToken == "") {
+		if (
+			token.data.access_token == "" ||
+			token.data.access_token == undefined
+		) {
 			throw new Error("Not Found Access Token");
 		}
+		console.log(`${companyID}`);
 
 		// ユーザ ID とアイコン URL を取得
 		const user = await client.users.profile.get({
@@ -49,11 +60,28 @@ app.command("/clock_in", async ({ command, ack, respond, client }) => {
 		}
 		const text = command.text || "稼働します！";
 		const icon_url = user.profile!.image_original;
+		console.log(`${user.profile}`);
 
 		// freee API を叩いて勤怠登録
 		const freeeID = await AxiosClient.get(`/user/${user.profile.email}`);
-		const users = await AxiosFreeeClient.get(`/users/me`);
-		console.log(users);
+		const params: freeeParam = {
+			company_id: Number(companyID),
+			type: "clock_in",
+			base_date: "",
+			datetime: new Date(),
+		};
+		console.log(params);
+		const config = {
+			headers: { Authorization: `Bearer ${token.data.access_token}` },
+		};
+		console.log(config);
+		console.log(freeeID.data.freee_id);
+		const result = await AxiosFreeeClient.post(
+			`/api/v1/employees/${freeeID.data.freee_id}/time_clocks`,
+			params,
+			config
+		);
+		console.log(result);
 		await client.chat.postMessage({
 			channel: command.channel_id,
 			text: text,

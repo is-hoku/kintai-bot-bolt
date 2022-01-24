@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const baseURL = process.env.KINTAI_API_URL || "http://localhost:8080";
-const freeeURL = "https://api.freee.co.jp";
+const freeeURL = "https://api.freee.co.jp/hr";
 
 export const AxiosClient: AxiosInstance = axios.create({
 	baseURL,
