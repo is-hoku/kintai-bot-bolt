@@ -1,5 +1,3 @@
-import { App, SlackCommandMiddlewareArgs } from "@slack/bolt";
-import { WebClient } from "@slack/web-api";
 import { AxiosClient, AxiosFreeeClient } from "../axios";
 
 type freeeParam = {
@@ -22,6 +20,12 @@ export const clock_in = async ({ command, ack, respond, client }: any) => {
 			throw new Error("Not Found Access Token");
 		}
 
+		// AccessToken の Refresh
+		const refresh = await AxiosClient.get(`/refresh`);
+		if (refresh.status != 200) {
+			throw new Error("Failed to refresh access token");
+		}
+
 		// ユーザ ID とアイコン URL を取得
 		const user = await client.users.profile.get({
 			user: command.user_id,
@@ -39,7 +43,6 @@ export const clock_in = async ({ command, ack, respond, client }: any) => {
 			type: "clock_in",
 			base_date: "",
 			datetime: new Date(),
-			//datetime: new Date("2022-01-19T06:36:03.995Z"),
 		};
 		const config = {
 			headers: { Authorization: `Bearer ${token.data.access_token}` },

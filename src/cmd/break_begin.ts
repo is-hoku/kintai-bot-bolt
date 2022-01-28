@@ -1,5 +1,3 @@
-import { App, SlackCommandMiddlewareArgs } from "@slack/bolt";
-import { WebClient } from "@slack/web-api";
 import { AxiosClient, AxiosFreeeClient } from "../axios";
 
 type freeeParam = {
@@ -20,6 +18,12 @@ export const break_begin = async ({ command, ack, respond, client }: any) => {
 			token.data.access_token == undefined
 		) {
 			throw new Error("Not Found Access Token");
+		}
+
+		// AccessToken の Refresh
+		const refresh = await AxiosClient.get(`/refresh`);
+		if (refresh.status != 200) {
+			throw new Error("Failed to refresh access token");
 		}
 
 		// ユーザ ID とアイコン URL を取得

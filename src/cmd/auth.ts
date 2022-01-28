@@ -1,11 +1,7 @@
-import { App, SlackCommandMiddlewareArgs } from "@slack/bolt";
-import { AxiosClient, AxiosFreeeClient } from "../axios";
+import { SlackCommandMiddlewareArgs } from "@slack/bolt";
+import { AxiosClient } from "../axios";
 
-export const auth = async ({
-	command,
-	ack,
-	respond,
-}: SlackCommandMiddlewareArgs) => {
+export const auth = async ({ ack, respond }: SlackCommandMiddlewareArgs) => {
 	try {
 		await ack();
 
