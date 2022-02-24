@@ -1,4 +1,4 @@
-import { AxiosClient, AxiosFreeeClient } from "../axios";
+import { AxiosClient } from "../axios";
 
 type freeeParam = {
 	company_id: number;
@@ -10,14 +10,7 @@ export const break_begin = async ({ command, ack, respond, client }: any) => {
 	try {
 		await ack();
 
-		// AccessToken の Refresh
-		const refresh = await AxiosClient.get(`/refresh`);
-		if (refresh.status != 200) {
-			throw new Error("Failed to refresh access token");
-		}
-
 		const companyID = process.env.COMPANY_ID;
-		const accessToken = refresh.data.access_token;
 
 		// ユーザ ID とアイコン URL を取得
 		const user = await client.users.profile.get({
@@ -36,15 +29,10 @@ export const break_begin = async ({ command, ack, respond, client }: any) => {
 			type: "break_begin",
 			base_date: "",
 			datetime: new Date(),
-			//datetime: new Date("2022-01-19T06:36:03.995Z"),
 		};
-		const config = {
-			headers: { Authorization: `Bearer ${accessToken}` },
-		};
-		const result = await AxiosFreeeClient.post(
-			`/api/v1/employees/${freeeID.data.freee_id}/time_clocks`,
-			params,
-			config
+		const result = await AxiosClient.post(
+			`/dakoku/${freeeID.data.freee_id}`,
+			params
 		);
 		await client.chat.postMessage({
 			channel: command.channel_id,

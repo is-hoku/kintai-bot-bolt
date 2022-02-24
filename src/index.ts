@@ -1,6 +1,6 @@
 import { App } from "@slack/bolt";
 import dotenv from "dotenv";
-import { AxiosClient, AxiosFreeeClient } from "./axios";
+import { AxiosClient } from "./axios";
 import { auth } from "./cmd/auth";
 import { clock_in } from "./cmd/clock_in";
 import { clock_out } from "./cmd/clock_out";
